@@ -47,14 +47,14 @@ passport.use(new LocalStrategy({
         throw err
       }
       if (!user) {
-        return done(null, false, {message: 'Unknown User'});
+        return done(null, false, {message: 'Such email does not exist'});
       }
       modelsModule.comparePassword(password,user.password,function(err,isMatch){
         if(err) throw err;
         if(isMatch){
           return done(null, user)
         } else {
-          return done(null,false, {message: 'Invalid Password'})
+          return done(null, false, {message: 'Invalid Password'})
         }
       })
     })
@@ -131,6 +131,10 @@ router.post('/signup', function(req,res){
 
 })
 
-
+router.get('/logout', function(req,res){
+  req.logout();
+  req.flash('success_msg','You have successfully logged out');
+  res.redirect('/');
+})
 
 module.exports = router;

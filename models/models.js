@@ -48,7 +48,6 @@ var User = mongoose.model("User", userSchema)
 module.exports = {
   User: User,
   getUserByEmail: function(email, callback){
-    console.log('in getUserByEmail')
     User.findOne({email:email}, callback)
   },
   getUserById: function(id, callback){
@@ -57,9 +56,7 @@ module.exports = {
   comparePassword: function(candidatePassword, hashedPassword, callback){
       bcrypt.compare(candidatePassword, hashedPassword, (err,isMatch)=>{
         if (err) throw err;
-        if(isMatch){
-          callback(null, isMatch);
-        }
+        callback(null, isMatch);
       })
   }
 }

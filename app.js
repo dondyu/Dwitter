@@ -22,10 +22,10 @@ app.set('view engine', 'handlebars');
 
 app.use(express.static(path.join(__dirname, '/public')));
 
-// app.use(bodyParser.urlencoded({extended: true}));
-// app.use(bodyParser.json());
 //SETTING THE BODYPARSER MIDDLEWARE
-app.use(bodyParser());
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+// app.use(bodyParser());
 app.use(cookieParser());
 
 //EXPRESS SESSION
@@ -88,33 +88,6 @@ app.use(function(req, res, next){
 //ROUTES
 app.use('/', routes);
 app.use('/users', users);
-
-//PASSPORT STRATEGY
-// passport.use(new LocalStrategy(
-//   function(username, password, done) {
-//     User.findOne({ username: username }, function (err, user) {
-//       if (err) { return done(err); }
-//       if (!user) { return done(null, false); }
-//       if (user.password!==password) { return done(null, false); }
-//       return done(null, user);
-//     });
-//   }
-// ));
-//
-// passport.serializeUser(function(user, cb) {
-//   cb(null, user.id);
-// });
-//
-// passport.deserializeUser(function(id, cb) {
-//   db.users.findById(id, function (err, user) {
-//     if (err) { return cb(err); }
-//     cb(null, user);
-//   });
-// });
-
-
-
-
 
 
 
