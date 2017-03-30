@@ -1,5 +1,10 @@
 var express = require('express');
 var router = express.Router();
+var modelsModule = require('../models/models');
+var User = modelsModule.User;
+
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
 // var app = express();
 
 
@@ -16,16 +21,63 @@ router.get('/feed', function(req,res){
   res.render('feed');
 })
 
-router.post('/login', function(req,res){
-  console.log('login pressed')
-  console.log(req.body.email);
-  //PASSPORT AUTHENTICATION
-  // passport.authenticate('local', { failureRedirect: '/login' }),
-  //   function(req, res) {
-  //     res.redirect('/feed');
-  //   }
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    User.findOne({ username: username }, function (err, user) {
+      if (err) { return done(err); }
+      if (!user) {
+        return done(null, false, { message: 'Incorrect username.' });
+      }
+      if (!user.validPassword(password)) {
+        return done(null, false, { message: 'Incorrect password.' });
+      }
+      return done(null, user);
+    });
+  }
+));
 
-})
+
+passport.use(new LocalStrategy(
+  function(username, password, done) {
+    modelsModule.getUserByUsername(username, function(err,user){
+      if(err){
+        throw err
+      }
+      if (!user) {
+        return done(null, false, {message: 'Unknown User'});
+      }
+      modelsModule.comparePassword(password,user.password,function(err,isMatch){
+        if(err) throw err;
+        if(isMatch){
+          return done(null, user)
+        } else {
+          return done(null,false, {message: 'Invalid Password'})
+        }
+      })
+    })
+  }
+))
+
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  modelsModule.getUserById(id, function(err, user) {
+    done(err, user);
+  });
+});
+
+
+
+router.post('/login',
+  passport.authenticate('local', {successRedirect: '/feed', failureRedirect: '/', failureFlash: true}),
+  function(req, res) {
+    // If this function gets called, authentication was successful.
+    // `req.user` contains the authenticated user.
+    res.redirect('/feed');
+  });
+
 
 router.get('/signup', function(req,res){
   res.render('signup')
@@ -59,18 +111,24 @@ router.post('/signup', function(req,res){
     })
   } else {
     console.log('ya gud with validation errors')
-    res.redirect('/feed')
+    var newUser = new User({
+      username: username,
+      password: password,
+      email: email,
+      firstName: firstName,
+      lastName: lastName,
+    })
+    var cb = function(err){
+      if (err){
+        throw err;
+      }
+    }
+    newUser.createSafeUser(cb);
+
+    req.flash('success_msg','You have successfully registered and now can login');
+
+    res.redirect('/')
   }
-  // User.create({
-  //   username: req.body.username,
-  //   password: req.body.password,
-  //   firstName: req.body.firstName,
-  //   lastName: req.body.lastName
-  // }, function(err){
-  //   if (err){
-  //     console.log(err)
-  //   }
-  // })
 
 })
 
