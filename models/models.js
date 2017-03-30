@@ -25,11 +25,30 @@ userSchema.methods.createSafeUser=function(callback){
     })
   })
 }
-
-
+var User = mongoose.model("User", userSchema)
+// var User = module.exports = mongoose.model("User", userSchema);
+//
+// module.exports.getUserByEmail = function(email, callback){
+//     console.log('in getUserByEmail')
+//     User.findOne({email:email}, callback)
+//   }
+//
+// module.exports.getUserById = function(id, callback){
+//     User.findById(id, callback)
+//   }
+//
+// module.exports.comparePassword = function(candidatePassword, hashedPassword, callback){
+//       bcrypt.compare(candidatePassword, hashedPassword, (err,isMatch)=>{
+//         if (err) throw err;
+//         if(isMatch){
+//           callback(null, isMatch);
+//         }
+//       })
+//   }
 module.exports = {
-  User: mongoose.model("User", userSchema),
+  User: User,
   getUserByEmail: function(email, callback){
+    console.log('in getUserByEmail')
     User.findOne({email:email}, callback)
   },
   getUserById: function(id, callback){

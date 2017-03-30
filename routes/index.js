@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var modelsModule = require('../models/models');
-var User = modelsModule.User;
+var User = require('../models/models').User;
 
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
@@ -21,25 +21,28 @@ router.get('/feed', function(req,res){
   res.render('feed');
 })
 
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) {
-        return done(null, false, { message: 'Incorrect username.' });
-      }
-      if (!user.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
-      }
-      return done(null, user);
-    });
-  }
-));
+// passport.use(new LocalStrategy(
+//   function(username, password, done) {
+//     User.findOne({ username: username }, function (err, user) {
+//       if (err) { return done(err); }
+//       if (!user) {
+//         return done(null, false, { message: 'Incorrect username.' });
+//       }
+//       if (!user.validPassword(password)) {
+//         return done(null, false, { message: 'Incorrect password.' });
+//       }
+//       return done(null, user);
+//     });
+//   }
+// ));
 
 
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    modelsModule.getUserByUsername(username, function(err,user){
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password'
+},
+  function(email, password, done) {
+    modelsModule.getUserByEmail(email, function(err,user){
       if(err){
         throw err
       }
@@ -71,12 +74,8 @@ passport.deserializeUser(function(id, done) {
 
 
 router.post('/login',
-  passport.authenticate('local', {successRedirect: '/feed', failureRedirect: '/', failureFlash: true}),
-  function(req, res) {
-    // If this function gets called, authentication was successful.
-    // `req.user` contains the authenticated user.
-    res.redirect('/feed');
-  });
+    passport.authenticate('local', {successRedirect: '/feed', failureRedirect: '/', failureFlash: true})
+);
 
 
 router.get('/signup', function(req,res){
@@ -131,6 +130,7 @@ router.post('/signup', function(req,res){
   }
 
 })
+
 
 
 module.exports = router;
