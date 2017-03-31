@@ -6,11 +6,27 @@ var User = require('../models/models').User;
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
-router.get('/', function(req,res){
+var checkAuthenticated = function (req,res,next){
+  if(req.isAuthenticated()){
+    next();
+  } else {
+    req.flash('error_msg', 'You are not logged in')
+    res.redirect('/')
+  }
+}
+
+var checkNotAuthenticated = function(req,res,next){
+  if (!req.isAuthenticated()){
+    next();
+  } else {
+    res.redirect('/feed')
+  }
+}
+router.get('/', checkNotAuthenticated, function(req,res){
   res.render('index')
 });
 
-router.get('/feed', function(req,res){
+router.get('/feed', checkAuthenticated, function(req,res){
   res.render('feed');
 })
 
@@ -52,7 +68,7 @@ router.post('/login',
     passport.authenticate('local', {successRedirect: '/feed', failureRedirect: '/', failureFlash: true})
 );
 
-router.get('/signup', function(req,res){
+router.get('/signup', checkNotAuthenticated, function(req,res){
   res.render('signup')
 })
 
@@ -105,7 +121,7 @@ router.post('/signup', function(req,res){
 
 })
 
-router.get('/logout', function(req,res){
+router.get('/logout', checkAuthenticated, function(req,res){
   req.logout();
   req.flash('success_msg','You have successfully logged out');
   res.redirect('/');
