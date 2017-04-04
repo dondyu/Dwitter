@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var modelsModule = require('../models/models');
 var User = require('../models/models').User;
+var Tweet = require('../models/models').Tweet;
 
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
@@ -27,7 +28,25 @@ router.get('/', checkNotAuthenticated, function(req,res){
 });
 
 router.get('/feed', checkAuthenticated, function(req,res){
-  res.render('feed');
+  var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+  Tweet.find(function(err, tweetsArr){
+
+    tweetsArr.map(function(element){
+      var date = element.date;
+      var day = date.getDate();
+      var month = date.getMonth();
+      var year = date.getFullYear();
+      var formattedDate = monthNames[month] + ' ' + day + ', ' + year;
+      element.formattedDate = formattedDate;
+      return element;
+    })
+    tweetsArr.reverse();
+    res.render('feed',{
+      tweetsArr: tweetsArr
+    });
+  });
+
 })
 
 passport.use(new LocalStrategy({
@@ -120,6 +139,26 @@ router.post('/signup', function(req,res){
   }
 
 })
+
+router.post('/newtweet', function(req,res){
+  var content = req.body.newTweet;
+  var date = new Date();
+  var likes = [];
+
+  var newTweet = new Tweet({
+    date: date,
+    content: content,
+    likes: likes
+  });
+  newTweet.save(function(err){
+    if(err){
+      throw err;
+    }
+  })
+  console.log(newTweet);
+  res.redirect('/feed')
+})
+
 
 router.get('/logout', checkAuthenticated, function(req,res){
   req.logout();

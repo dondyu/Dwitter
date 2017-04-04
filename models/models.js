@@ -12,7 +12,10 @@ var userSchema = mongoose.Schema({
   password: String,
   firstName: String,
   lastName: String,
-  email: String
+  email: String,
+  registrationDate: Date,
+  followers: [],
+  following: []
 })
 
 userSchema.methods.createSafeUser=function(callback){
@@ -27,6 +30,14 @@ userSchema.methods.createSafeUser=function(callback){
 }
 var User = mongoose.model("User", userSchema)
 
+var tweetSchema = mongoose.Schema({
+  date: Date,
+  content: String,
+  likes: []
+})
+
+var Tweet = mongoose.model("Tweet", tweetSchema);
+
 module.exports = {
   User: User,
   getUserByEmail: function(email, callback){
@@ -40,5 +51,6 @@ module.exports = {
         if (err) throw err;
         callback(null, isMatch);
       })
-  }
+  },
+  Tweet:Tweet
 }
