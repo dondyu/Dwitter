@@ -13,7 +13,7 @@ var User = require('./models/models').User;
 var passport = require('passport');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
+var tweets = require('./routes/tweets');
 
 //SETTING THE VIEW ENGINE
 app.set('views', path.join(__dirname, 'views'))
@@ -87,7 +87,7 @@ app.use(function(req, res, next){
 
 //ROUTES
 app.use('/', routes);
-app.use('/users', users);
+app.use('/tweets', tweets);
 
 
 

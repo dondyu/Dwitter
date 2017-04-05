@@ -14,8 +14,9 @@ var userSchema = mongoose.Schema({
   lastName: String,
   email: String,
   registrationDate: Date,
-  followers: [],
-  following: []
+  followers: [{type: String, ref: "User"}],
+  following: [{type: String, ref: "User"}],
+  tweets: [{type: String, ref: "Tweet"}]
 })
 
 userSchema.methods.createSafeUser=function(callback){
@@ -33,7 +34,9 @@ var User = mongoose.model("User", userSchema)
 var tweetSchema = mongoose.Schema({
   date: Date,
   content: String,
-  likes: []
+  likes: [{type: String, ref: "User"}],
+  _creator: {type: String, ref: "User"},
+
 })
 
 var Tweet = mongoose.model("Tweet", tweetSchema);

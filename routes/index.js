@@ -30,22 +30,61 @@ router.get('/', checkNotAuthenticated, function(req,res){
 router.get('/feed', checkAuthenticated, function(req,res){
   var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
-  Tweet.find(function(err, tweetsArr){
-
+  Tweet.find()
+  .populate('_creator')
+  .exec(function(err, tweetsArr){
     tweetsArr.map(function(element){
-      var date = element.date;
-      var day = date.getDate();
-      var month = date.getMonth();
-      var year = date.getFullYear();
-      var formattedDate = monthNames[month] + ' ' + day + ', ' + year;
-      element.formattedDate = formattedDate;
-      return element;
-    })
-    tweetsArr.reverse();
-    res.render('feed',{
-      tweetsArr: tweetsArr
-    });
-  });
+        //formatting the date
+        var date = element.date;
+        var day = date.getDate();
+        var month = date.getMonth();
+        var year = date.getFullYear();
+        var formattedDate = monthNames[month] + ' ' + day + ', ' + year;
+        element.formattedDate = formattedDate;
+        // element.populate('_creator')
+        // .exec(function(err, element){
+        //   if(err) throw err;
+        //   console.log(element._creator.firstName);
+        // })
+        //formatting the name
+        
+
+        return element;
+      })
+      tweetsArr.reverse();
+      res.render('feed',{
+        tweetsArr: tweetsArr
+      });
+  })
+  // Tweet.find(function(err, tweetsArr){
+  //   // var user;
+  //   // User.findById(element.authorID,function(err,user){
+  //   //   user = user;
+  //   // })
+  //   tweetsArr.map(function(element){
+  //     //formatting the date
+  //     var date = element.date;
+  //     var day = date.getDate();
+  //     var month = date.getMonth();
+  //     var year = date.getFullYear();
+  //     var formattedDate = monthNames[month] + ' ' + day + ', ' + year;
+  //     element.formattedDate = formattedDate;
+  //     // element.populate('_creator')
+  //     // .exec(function(err, element){
+  //     //   if(err) throw err;
+  //     //   console.log(element._creator.firstName);
+  //     // })
+  //     //formatting the name
+  //     var formattedName;
+  //
+  //
+  //     return element;
+  //   })
+  //   tweetsArr.reverse();
+  //   res.render('feed',{
+  //     tweetsArr: tweetsArr
+  //   });
+  // });
 
 })
 
@@ -133,30 +172,11 @@ router.post('/signup', function(req,res){
     }
     newUser.createSafeUser(cb);
 
-    req.flash('success_msg','You have successfully registered and now can login');
+    req.flash('success_msg','You have successfully registered and can now login');
 
     res.redirect('/')
   }
 
-})
-
-router.post('/newtweet', function(req,res){
-  var content = req.body.newTweet;
-  var date = new Date();
-  var likes = [];
-
-  var newTweet = new Tweet({
-    date: date,
-    content: content,
-    likes: likes
-  });
-  newTweet.save(function(err){
-    if(err){
-      throw err;
-    }
-  })
-  console.log(newTweet);
-  res.redirect('/feed')
 })
 
 

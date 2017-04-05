@@ -8,16 +8,24 @@
 <body>
   <div class="form-group">
     <label for="newTweet">What's on your mind?</label>
-    <form action = "newTweet" method = "post">
+    <form action = "tweets/new" method = "post">
       <textarea class="form-control" name="newTweet" rows="5" id="newtweet"></textarea>
-      <input type='submit' class = "btn btn-default" value = 'Tweet this shit' id='tweetButton'>
+      <input type='submit' class = "btn btn-default" value = 'Dweet this shit' id='tweetButton'>
     </form>
   </div>
   <div>
     {{#each tweetsArr}}
       <p>
+        {{this._creator.firstName}} {{this._creator.lastName}}:</br>
         {{this.content}} </br>
-        Posted at: {{this.formattedDate}}, Likes: {{this.likes.length}}
+        Posted at: {{this.formattedDate}}, Likes: {{this.likes.length}} </br>
+        <table>
+          <TR>
+            <TD><form action="tweets/like" method="post"><input type="submit" class="btn-default btn-xs form-group" value="Like" /></form></TD>
+            <TD><form><input type="submit" class="btn-default btn-xs form-group" value="Comment"></form></TD>
+            <TD><form><input type="submit" class="btn-default btn-xs form-group" value="Redweet"></form></TD>
+          </TR>
+        </table>
       </p>
     {{/each}}
   </div>
