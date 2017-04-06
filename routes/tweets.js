@@ -8,20 +8,28 @@ router.post('/new', function(req,res){
   var content = req.body.newtweet;
   var date = new Date();
   var likes = [];
-
   var newTweet = new Tweet({
     date: date,
     content: content,
     likes: likes,
     _creator: req.user._id
   });
-  newTweet.save(function(err){
-    if(err){
-      throw err;
-    }
+  var tweetId;
+  newTweet.save(function(err, data){
+    if (err) throw err;
+    tweetId = data._id
+    User.findById(req.user._id, function(err, foundUser){
+      console.log("in foundUser");
+      console.log(tweetId);
+      var tweetsArr = foundUser.tweets;
+      tweetsArr.push(tweetId);
+      foundUser.save(function(err, updatedUser){
+        if (err) throw err;
+        console.log(updatedUser);
+        res.redirect('/feed')
+      })
+    })
   })
-  console.log(req.user);
-  res.redirect('/feed')
 })
 
 router.get('/like/:tweetid', function(req,res){
@@ -48,8 +56,8 @@ router.post('/like/:tweetid', function(req,res){
     }
     foundTweet.save(function(err, updatedTweet){
       if (err) throw err;
+      res.redirect('/feed')
     })
-    res.redirect('/feed')
   })
 });
 

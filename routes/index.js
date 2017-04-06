@@ -36,6 +36,8 @@ var isLiked = function(likesArr, userId){
     return false;
 }
 
+//TODO: Transfer the date conversion function
+
 router.get('/feed', checkAuthenticated, function(req,res){
   var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -155,6 +157,38 @@ router.post('/signup', function(req,res){
 
 })
 
+router.get('/:userId', checkAuthenticated, function(req,res){
+  User.findById(req.params.userId)
+  .populate({path: 'tweets',
+             model: 'Tweet',
+             populate: {
+               path: '_creator',
+               model: 'User'
+             }})
+  .exec(function(err, foundUser){
+    console.log(foundUser);
+    var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var tweetsArr = foundUser.tweets
+    tweetsArr.map(function(element){
+        //formatting the date
+        var date = element.date;
+        var day = date.getDate();
+        var month = date.getMonth();
+        var year = date.getFullYear();
+        var formattedDate = monthNames[month] + ' ' + day + ', ' + year;
+        element.formattedDate = formattedDate;
+        if(isLiked(element.likes, element._creator._id)){
+          element.likeButton = "Unlike";
+        } else {
+          element.likeButton = "Like";
+        }
+        return element;
+      })
+    res.render('profile', {
+      User: foundUser
+    })
+  })
+})
 
 router.get('/logout', checkAuthenticated, function(req,res){
   req.logout();
