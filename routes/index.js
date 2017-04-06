@@ -27,6 +27,15 @@ router.get('/', checkNotAuthenticated, function(req,res){
   res.render('index')
 });
 
+var isLiked = function(likesArr, userId){
+    for(var i=0; i<likesArr.length; i++){
+      if(likesArr[i]===userId.toString()){
+        return true;
+      }
+    }
+    return false;
+}
+
 router.get('/feed', checkAuthenticated, function(req,res){
   var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
@@ -41,14 +50,11 @@ router.get('/feed', checkAuthenticated, function(req,res){
         var year = date.getFullYear();
         var formattedDate = monthNames[month] + ' ' + day + ', ' + year;
         element.formattedDate = formattedDate;
-        // element.populate('_creator')
-        // .exec(function(err, element){
-        //   if(err) throw err;
-        //   console.log(element._creator.firstName);
-        // })
-        //formatting the name
-        
-
+        if(isLiked(element.likes, element._creator._id)){
+          element.likeButton = "Unlike";
+        } else {
+          element.likeButton = "Like";
+        }
         return element;
       })
       tweetsArr.reverse();
@@ -56,36 +62,6 @@ router.get('/feed', checkAuthenticated, function(req,res){
         tweetsArr: tweetsArr
       });
   })
-  // Tweet.find(function(err, tweetsArr){
-  //   // var user;
-  //   // User.findById(element.authorID,function(err,user){
-  //   //   user = user;
-  //   // })
-  //   tweetsArr.map(function(element){
-  //     //formatting the date
-  //     var date = element.date;
-  //     var day = date.getDate();
-  //     var month = date.getMonth();
-  //     var year = date.getFullYear();
-  //     var formattedDate = monthNames[month] + ' ' + day + ', ' + year;
-  //     element.formattedDate = formattedDate;
-  //     // element.populate('_creator')
-  //     // .exec(function(err, element){
-  //     //   if(err) throw err;
-  //     //   console.log(element._creator.firstName);
-  //     // })
-  //     //formatting the name
-  //     var formattedName;
-  //
-  //
-  //     return element;
-  //   })
-  //   tweetsArr.reverse();
-  //   res.render('feed',{
-  //     tweetsArr: tweetsArr
-  //   });
-  // });
-
 })
 
 passport.use(new LocalStrategy({

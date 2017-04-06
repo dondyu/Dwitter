@@ -83,8 +83,6 @@ app.use(function(req, res, next){
   next();
 })
 
-
-
 //ROUTES
 app.use('/', routes);
 app.use('/tweets', tweets);

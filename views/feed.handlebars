@@ -3,33 +3,43 @@
 <head>
   <title>Wellcome to Dwitter!</title>
   <script type="text/javascript" src="jquery/jquery-3.2.0.min.js"></script>
-
+  <script type="text/javascript" src="jquery/likebutton.js"></script>
 </head>
 <body>
   <div class="form-group">
     <label for="newTweet">What's on your mind?</label>
     <form action = "tweets/new" method = "post">
-      <textarea class="form-control" name="newTweet" rows="5" id="newtweet"></textarea>
+      <textarea class="form-control" name="newtweet" rows="5" id="newtweet"></textarea>
       <input type='submit' class = "btn btn-default" value = 'Dweet this shit' id='tweetButton'>
     </form>
   </div>
   <div>
     {{#each tweetsArr}}
-      <p>
-        {{this._creator.firstName}} {{this._creator.lastName}}:</br>
-        {{this.content}} </br>
-        Posted at: {{this.formattedDate}}, Likes: {{this.likes.length}} </br>
+
+        <table>
+        <TR>
+          <TD>
+        {{this._creator.firstName}} {{this._creator.lastName}}:</br></TD>
+      </TR>
+      <TR>
+        <TD>{{this.content}} </br></TD>
+      </TR>
+        <TR>
+          <TD>Posted at: {{this.formattedDate}}, Likes:</TD>
+          <TD><div id='{{this.likes._id}}' value='{{this.likes._id}}'>{{this.likes.length}}</div></TD> </br>
+        </TR>
+      </table>
         <table>
           <TR>
-            <TD><form action="tweets/like" method="post"><input type="submit" class="btn-default btn-xs form-group" value="Like" /></form></TD>
+            <TD><form action="tweets/like/{{this._id}}" method="post"><input type="submit" class="likeButton btn-default btn-xs form-group" value={{this.likeButton}} /></form></TD>
             <TD><form><input type="submit" class="btn-default btn-xs form-group" value="Comment"></form></TD>
             <TD><form><input type="submit" class="btn-default btn-xs form-group" value="Redweet"></form></TD>
           </TR>
         </table>
-      </p>
+
     {{/each}}
   </div>
-  <script type="text/javascript" src="jquery/tweets.js"> </script>
+
 
 
 </body>

@@ -5,7 +5,7 @@ var User = require('../models/models').User;
 var Tweet = require('../models/models').Tweet;
 
 router.post('/new', function(req,res){
-  var content = req.body.newTweet;
+  var content = req.body.newtweet;
   var date = new Date();
   var likes = [];
 
@@ -24,8 +24,33 @@ router.post('/new', function(req,res){
   res.redirect('/feed')
 })
 
-router.post('like', function(req,res){
+router.get('/like/:tweetid', function(req,res){
+  res.send(req.params)
+})
 
+var isLiked = function(likesArr, userId){
+    for(var i=0; i<likesArr.length; i++){
+      if(likesArr[i]===userId.toString()){
+        return true;
+      }
+    }
+    return false;
+}
+
+router.post('/like/:tweetid', function(req,res){
+  Tweet.findById(req.params.tweetid, function(err, foundTweet){
+    var likesArr = foundTweet.likes;
+    var userId = req.user._id
+    if (isLiked(likesArr, userId)){
+      likesArr.splice(likesArr.indexOf(userId), 1)
+      } else {
+      likesArr.push(userId)
+    }
+    foundTweet.save(function(err, updatedTweet){
+      if (err) throw err;
+    })
+    res.redirect('/feed')
+  })
 });
 
 
