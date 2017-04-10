@@ -3,68 +3,17 @@ var router = express.Router();
 var modelsModule = require('../models/models');
 var User = require('../models/models').User;
 var Tweet = require('../models/models').Tweet;
-
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
-var checkAuthenticated = function (req,res,next){
-  if(req.isAuthenticated()){
-    next();
-  } else {
-    req.flash('error_msg', 'You are not logged in')
-    res.redirect('/')
-  }
-}
+var helperFunctions = require('../public/js/helperFunctions');
+var dateConversion = helperFunctions.dateConversion;
+var checkAuthenticated = helperFunctions.checkAuthenticated;
+var checkNotAuthenticated = helperFunctions.checkNotAuthenticated;
 
-var checkNotAuthenticated = function(req,res,next){
-  if (!req.isAuthenticated()){
-    next();
-  } else {
-    res.redirect('/feed')
-  }
-}
 router.get('/', checkNotAuthenticated, function(req,res){
   res.render('index')
 });
-
-var isLiked = function(likesArr, userId){
-    for(var i=0; i<likesArr.length; i++){
-      if(likesArr[i]===userId.toString()){
-        return true;
-      }
-    }
-    return false;
-}
-
-//TODO: Transfer the date conversion function
-
-router.get('/feed', checkAuthenticated, function(req,res){
-  var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-  Tweet.find()
-  .populate('_creator')
-  .exec(function(err, tweetsArr){
-    tweetsArr.map(function(element){
-        //formatting the date
-        var date = element.date;
-        var day = date.getDate();
-        var month = date.getMonth();
-        var year = date.getFullYear();
-        var formattedDate = monthNames[month] + ' ' + day + ', ' + year;
-        element.formattedDate = formattedDate;
-        if(isLiked(element.likes, element._creator._id)){
-          element.likeButton = "Unlike";
-        } else {
-          element.likeButton = "Like";
-        }
-        return element;
-      })
-      tweetsArr.reverse();
-      res.render('feed',{
-        tweetsArr: tweetsArr
-      });
-  })
-})
 
 passport.use(new LocalStrategy({
   usernameField: 'email',
@@ -109,8 +58,6 @@ router.get('/signup', checkNotAuthenticated, function(req,res){
 })
 
 router.post('/signup', function(req,res){
-  console.log('signup pressed')
-  console.log(req.body.username)
   var username=req.body.username;
   var password=req.body.password;
   var email=req.body.email;
@@ -129,13 +76,10 @@ router.post('/signup', function(req,res){
   var errors = req.validationErrors();
 
   if(errors){
-    console.log('NO GOOD (errors)')
-    console.log(errors);
     res.render('signup', {
       errors: errors
     })
   } else {
-    console.log('ya gud with validation errors')
     var newUser = new User({
       username: username,
       password: password,
@@ -149,44 +93,21 @@ router.post('/signup', function(req,res){
       }
     }
     newUser.createSafeUser(cb);
-
     req.flash('success_msg','You have successfully registered and can now login');
-
     res.redirect('/')
   }
 
 })
 
-router.get('/:userId', checkAuthenticated, function(req,res){
-  User.findById(req.params.userId)
-  .populate({path: 'tweets',
-             model: 'Tweet',
-             populate: {
-               path: '_creator',
-               model: 'User'
-             }})
-  .exec(function(err, foundUser){
-    console.log(foundUser);
-    var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-    var tweetsArr = foundUser.tweets
-    tweetsArr.map(function(element){
-        //formatting the date
-        var date = element.date;
-        var day = date.getDate();
-        var month = date.getMonth();
-        var year = date.getFullYear();
-        var formattedDate = monthNames[month] + ' ' + day + ', ' + year;
-        element.formattedDate = formattedDate;
-        if(isLiked(element.likes, element._creator._id)){
-          element.likeButton = "Unlike";
-        } else {
-          element.likeButton = "Like";
-        }
-        return element;
-      })
-    res.render('profile', {
-      User: foundUser
-    })
+router.get('/feed', checkAuthenticated, function(req,res){
+  Tweet.find()
+  .populate('_creator')
+  .exec(function(err, tweetsArr){
+    dateConversion(tweetsArr);
+      tweetsArr.reverse();
+      res.render('feed',{
+        tweetsArr: tweetsArr
+      });
   })
 })
 

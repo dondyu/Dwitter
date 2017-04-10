@@ -14,7 +14,7 @@ var passport = require('passport');
 
 var routes = require('./routes/index');
 var tweets = require('./routes/tweets');
-var user = require('./routes/user');
+var profile = require('./routes/profile');
 
 //SETTING THE VIEW ENGINE
 app.set('views', path.join(__dirname, 'views'))
@@ -43,22 +43,9 @@ app.use(passport.session());
 //EXPRESS VALIDATOR
 // In this example, the formParam value is going to get morphed into form body format useful for printing.
 app.use(expressValidator({
-  // errorFormatter: function(param, msg, value) {
-  //     var namespace = param.split('.')
-  //     , root    = namespace.shift()
-  //     , formParam = root;
-  //
-  //   while(namespace.length) {
-  //     formParam += '[' + namespace.shift() + ']';
-  //   }
-  //   return {
-  //     param : formParam,
-  //     msg   : msg,
-  //     value : value
-  //   };
-  // },
   customValidators: {
     areNoSpaces: function(value){
+      console.log('in custom validator');
       console.log(value);
       var newVal = value.split('');
       console.log(newVal);
@@ -87,7 +74,7 @@ app.use(function(req, res, next){
 //ROUTES
 app.use('/', routes);
 app.use('/tweets', tweets);
-app.use('/user', user);
+app.use('/profile', profile);
 
 
 

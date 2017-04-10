@@ -19,7 +19,7 @@
     <table>
       <TR>
         <TD>
-          {{this._creator.firstName}} {{this._creator.lastName}}:</br></TD>
+          <a href="profile/{{this._creator._id}}">{{this._creator.firstName}} {{this._creator.lastName}}:</a></TD>
         </TR>
         <TR>
           <TD>{{this.content}} </br></TD>
@@ -31,9 +31,9 @@
       </table>
       <table>
         <TR>
-          <TD><form action="tweets/like/{{this._id}}" method="post"><input type="submit" class="likeButton btn-default btn-xs form-group" value={{this.likeButton}} /></form></TD>
-          <TD><form><input type="submit" class="btn-default btn-xs form-group" value="Comment"></form></TD>
-          <TD><form><input type="submit" class="btn-default btn-xs form-group" value="Redweet"></form></TD>
+          <TD><form action="profile/like/{{this._id}}" method="post"><input type="submit" class="likeButton btn btn-default btn-xs form-group" value={{this.likeButton}} /></form></TD>
+          <TD><form><input type="submit" class="btn btn-default btn-xs form-group" value="Comment"></form></TD>
+          <TD><form><input type="submit" class="btn btn-default btn-xs form-group" value="Redweet"></form></TD>
         </TR>
       </table>
 
