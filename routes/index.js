@@ -10,6 +10,7 @@ var helperFunctions = require('../public/js/helperFunctions');
 var dateConversion = helperFunctions.dateConversion;
 var checkAuthenticated = helperFunctions.checkAuthenticated;
 var checkNotAuthenticated = helperFunctions.checkNotAuthenticated;
+var isLiked = helperFunctions.isLiked;
 
 router.get('/', checkNotAuthenticated, function(req,res){
   res.render('index')
@@ -104,6 +105,13 @@ router.get('/feed', checkAuthenticated, function(req,res){
   .populate('_creator')
   .exec(function(err, tweetsArr){
     dateConversion(tweetsArr);
+    tweetsArr.map(function(element){
+      if(isLiked(element.likes, req.user._id)){
+        element.likeButton = "Unlike";
+      } else {
+        element.likeButton = "Like";
+      }
+    })
       tweetsArr.reverse();
       res.render('feed',{
         tweetsArr: tweetsArr

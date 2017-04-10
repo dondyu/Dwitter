@@ -24,6 +24,13 @@ router.get('/:userId', checkAuthenticated, function(req,res){
 
     var tweetsArr = foundUser.tweets
     dateConversion(tweetsArr);
+    tweetsArr.map(function(element){
+      if(isLiked(element.likes, req.user._id)){
+        element.likeButton = "Unlike";
+      } else {
+        element.likeButton = "Like";
+      }
+    })
     tweetsArr.reverse();
     //TODO: CHANGE THE SCRIPT THING
 

@@ -1,13 +1,17 @@
 $(document).ready(function(){
   $('.likeButton').click(function(){
-    var numberOfLikes =  $('#numberOfLikes').text(); //TODO: figure out how to refer to this ID
+    console.log('hey');
+    var id = $(this).attr('id');
+    console.log(id);
+    var numberOfLikes =  $('.'+id).text(); //TODO: figure out how to refer to this ID
+    console.log(numberOfLikes)
     var numberOfLikes = parseInt(numberOfLikes)
     if($(this).val()==='Like'){
       $(this).val('Unlike')
-      $('#numberOfLikes').text( numberOfLikes+1)
+      $('.'+id).text( numberOfLikes+1)
     } else {
       $(this).val('Like')
-      $('#numberOfLikes').text( numberOfLikes-1)
+      $('.'+id).text( numberOfLikes-1)
     }
   })
 })

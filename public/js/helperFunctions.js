@@ -47,11 +47,6 @@ var dateConversion = function(tweetsArr){
     var year = date.getFullYear();
     var formattedDate = ' ' + hours + ':' + minutes + ' on '+ monthNames[month] + ' ' + day + ', ' + year;
     element.formattedDate = formattedDate;
-    if(isLiked(element.likes, element._creator._id)){
-      element.likeButton = "Unlike";
-    } else {
-      element.likeButton = "Like";
-    }
     return element;
   })
 }
