@@ -1,11 +1,7 @@
 $(document).ready(function(){
   $('.likeButton').click(function(){
-    console.log('hey');
     var id = $(this).attr('id');
-    console.log(id);
-    var numberOfLikes =  $('.'+id).text(); //TODO: figure out how to refer to this ID
-    console.log(numberOfLikes)
-    var numberOfLikes = parseInt(numberOfLikes)
+    var numberOfLikes =  parseInt($('.'+id).text()); 
     if($(this).val()==='Like'){
       $(this).val('Unlike')
       $('.'+id).text( numberOfLikes+1)
