@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var bcrypt = require('bcryptjs');
+//ENTER YOUR MONGODB CREDENTIALS IN CONNECT.JS FILE OR USE AN ENVIRONMENT VARIABLE
 mongoose.connect(process.env.MONGODB_URI || require("./connect"))
 var db = mongoose.connection;
 

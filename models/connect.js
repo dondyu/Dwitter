@@ -1,1 +1,1 @@
-module.exports = "mongodb://dondyu:SED8221DenSon2905@ds139939.mlab.com:39939/don-horizons"
+module.exports = "mongodb://<username>:<password>@ds139939.mlab.com:39939/don-horizons" //TODO: Enter your MongoDb credentials or pass it through Environment Variable

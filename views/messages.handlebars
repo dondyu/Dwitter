@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <Title>Messages</Title>
+    <style>
+      body {
+        margin-top:30px;
+      }
+      #messageArea {
+
+      }
+      #userFormArea {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class = "container">
+      <!-- TRANSFORM THIS AREA INTO A CHOICE OF CONVERSATIONS (ITS STYLE IS DISPLAY NONE ATM) -->
+      <div class = "row" id = "userFormArea">
+        <div class = "col-md-12 col-lg-8">
+          <form id = "users-form">
+            <div class = "form-group">
+              <label>Choose a conversation</label>
+              <input class = "form-control" id ="username"></input>
+              </br>
+              <input type = "submit" class= "btn btn-primary" value = "Send Message"/>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class = "row" id = "messageArea">
+        <div class = "col-md-4 col-lg-2">
+          <div class = "well">
+            <h3>Online Users</h3>
+            <ul class = "list-group" id="users"></ul>
+          </div>
+        </div>
+        <div class = "col-md-8 col-lg-6">
+          <div class ="chat" id ="chat"></div>
+          <form id = "message-form">
+            <div class = "form-group">
+              <label>Enter Message</label>
+              <textarea class = "form-control" id ="message"></textarea>
+              </br>
+              <input type = "submit" class= "btn btn-primary" value = "Send Message"/>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <script>
+      $(function(){
+        var socket = io.connect();
+        var $messageForm = $('#message-form');
+        var $message = $('#message');
+        var $chat = $('#chat');
+        var $messageArea = $('#messageArea');
+        var $userFormArea = $('#userFormArea');
+        var $usersForm = $('#users-form');
+        var $users = $('#users');
+
+        $messageForm.submit(function(e){
+          e.preventDefault();
+          socket.emit('send message', {
+            message: $message.val(),
+            user: '{{user.firstName}} {{user.lastName}}'
+          });
+          $message.val('');
+        })
+        socket.on('new message', function(data){
+          $chat.append('<div class = "well">' + data.user + ": "+ data.message + '</div>')
+        })
+      })
+    </script>
+
+  </body>
+</html>

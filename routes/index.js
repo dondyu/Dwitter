@@ -6,6 +6,7 @@ var Tweet = require('../models/models').Tweet;
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
+
 var helperFunctions = require('../public/js/helperFunctions');
 var dateConversion = helperFunctions.dateConversion;
 var checkAuthenticated = helperFunctions.checkAuthenticated;
@@ -116,6 +117,12 @@ router.get('/feed', checkAuthenticated, function(req,res){
       res.render('feed',{
         tweetsArr: tweetsArr
       });
+  })
+})
+
+router.get('/messages', checkAuthenticated, function(req,res){
+  res.render('messages',{
+    user: req.user
   })
 })
 

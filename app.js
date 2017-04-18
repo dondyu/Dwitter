@@ -16,6 +16,36 @@ var routes = require('./routes/index');
 var tweets = require('./routes/tweets');
 var profile = require('./routes/profile');
 
+//SETTING UP THE SERVER AND INITIALIZING SOCKET.IO
+app.set('port', (process.env.PORT || 3000))
+var server = app.listen(app.get('port'), function(){
+  console.log('Server started on port '+ app.get('port'))
+})
+var io = require('socket.io').listen(server)
+var connections = [];
+
+//SOCKET.IO TODO: Create a user-to-user chat
+io.on('connection', function(socket){
+  connections.push(socket);
+  console.log('Connected: %s sockets connected', connections.length)
+  // socket.emit('send', {hello: 'world'})
+  // socket.on ('receive', function(data){
+  //   console.log(data)
+  // })
+
+  //Send message
+  socket.on('send message', function(data){
+    console.log(data)
+    io.sockets.emit('new message', data)
+  })
+
+  //Disconnect
+  socket.on('disconnect', function(data){
+    connections.splice(connections.indexOf(socket), 1);
+    console.log('disconnected', connections.length);
+  })
+})
+
 //SETTING THE VIEW ENGINE
 app.set('views', path.join(__dirname, 'views'))
 app.engine('handlebars', exphbs({defaultLayout:'layout'}));
@@ -26,7 +56,7 @@ app.use(express.static(path.join(__dirname, '/public')));
 //SETTING THE BODYPARSER MIDDLEWARE
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-// app.use(bodyParser());
+app.use(bodyParser());
 app.use(cookieParser());
 
 //EXPRESS SESSION
@@ -41,7 +71,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //EXPRESS VALIDATOR
-// In this example, the formParam value is going to get morphed into form body format useful for printing.
 app.use(expressValidator({
   customValidators: {
     areNoSpaces: function(value){
@@ -75,11 +104,3 @@ app.use(function(req, res, next){
 app.use('/', routes);
 app.use('/tweets', tweets);
 app.use('/profile', profile);
-
-
-
-app.set('port', (process.env.PORT || 3000))
-
-app.listen(app.get('port'), function(){
-  console.log('Server started on port '+ app.get('port'))
-})
