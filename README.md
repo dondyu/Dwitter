@@ -5,7 +5,7 @@ Insert your MONGODB credentials in models/connect.js or pass them using environm
 
 Functionality: 
   1. Sign up and Login built with Passport.js
-  2. Fields in the form validation using express-validator middleware
+  2. Validating fields in the form using express-validator middleware
   3. Tweeting and displaying all users' tweets in the Feed chronologically
   4. Displaying specific user's profile with tweets created solely by him/her
   5. Liking tweets
